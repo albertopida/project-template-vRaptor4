@@ -2,12 +2,9 @@ package br.com.caelum.vraptor.controller;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-
 import br.com.caelum.vraptor.Controller;
-import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -19,20 +16,21 @@ import br.com.caelum.vraptor.view.Results;
 
 @Controller
 public class ProdutoController implements Serializable {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -4229172530055003816L;
-	//
-	private final Result result;
+
+	 final Result result;
+	 final ProdutoDao dao; 
 
 	@Inject
-	public ProdutoController(Result result) {
+	public ProdutoController(Result result, ProdutoDao produtoDao) {
 		this.result = result;
+		this.dao = produtoDao;
 	}
 
+	@Deprecated
 	public ProdutoController() {
-		this(null);
+		this(null, null);
 	}
 
 	@Path("/")
@@ -60,24 +58,14 @@ public class ProdutoController implements Serializable {
 
 	@Post("/produto/adiciona")
 	public void adiciona(Produto produto) {
-		EntityManager em = JPAUtil.criaEntityManager();
-		em.getTransaction().begin();
-		ProdutoDao dao = new ProdutoDao(em);
 		dao.adiciona(produto);
-		em.getTransaction().commit();
-
 		result.include("mensagem", "Produto adicionado com sucesso!");
-
 		result.redirectTo(this).lista();
 	}
 
 	@Path("/produto/remove")  
 	public void remove(Produto produto) {
-		EntityManager em = JPAUtil.criaEntityManager();
-		em.getTransaction().begin();
-		ProdutoDao dao = new ProdutoDao(em);
 		dao.remove(produto);
-		em.getTransaction().commit();
 
 		//result.include("mensagem", "objeto excluido com sucesso");
 		
